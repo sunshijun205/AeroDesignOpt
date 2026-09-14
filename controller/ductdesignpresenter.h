@@ -1,6 +1,8 @@
 #ifndef DUCTDESIGNPRESENTER_H
 #define DUCTDESIGNPRESENTER_H
 
+#include "paramconstraints.h"
+
 #include <QObject>
 #include <QString>
 
@@ -26,6 +28,7 @@ public slots:
 private:
     DuctDesignPage *m_view = nullptr;
     DuctDesignService *m_service = nullptr;
+    ParamConstraints m_constraints;
 };
 
 #endif

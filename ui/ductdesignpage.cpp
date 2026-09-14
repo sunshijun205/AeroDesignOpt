@@ -10,12 +10,26 @@
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLayout>
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QStyle>
 #include <QVBoxLayout>
+
+namespace {
+void clearLayout(QVBoxLayout *layout)
+{
+    if (!layout)
+        return;
+    while (QLayoutItem *item = layout->takeAt(0)) {
+        if (QWidget *w = item->widget())
+            w->deleteLater();
+        delete item;
+    }
+}
+}
 
 DuctDesignPage::DuctDesignPage(QWidget *parent)
     : QWidget(parent)
@@ -113,6 +127,19 @@ QWidget *DuctDesignPage::buildParamsPage()
     btnRow->addStretch();
     ol->addLayout(btnRow);
     lay->addWidget(ops);
+
+    auto *cons = makePanel();
+    auto *csl = qobject_cast<QVBoxLayout *>(cons->layout());
+    csl->addWidget(makePanelTitle(QString::fromUtf8("参数约束"), QString::fromUtf8("校验依据")));
+    m_constraintSource = new QLabel(QString::fromUtf8("约束来源：加载中…"));
+    m_constraintSource->setObjectName(QStringLiteral("NoteLabel"));
+    m_constraintSource->setWordWrap(true);
+    csl->addWidget(m_constraintSource);
+    auto *consWrap = new QWidget;
+    m_constraintHost = new QVBoxLayout(consWrap);
+    m_constraintHost->setContentsMargins(0, 0, 0, 0);
+    csl->addWidget(consWrap);
+    lay->addWidget(cons);
 
     auto *gen = makePanel();
     auto *gl = qobject_cast<QVBoxLayout *>(gen->layout());
@@ -263,6 +290,39 @@ void DuctDesignPage::setValidation(const QStringList &issues)
     }
     m_paramStatus->style()->unpolish(m_paramStatus);
     m_paramStatus->style()->polish(m_paramStatus);
+}
+
+void DuctDesignPage::setConstraints(const ParamConstraints &c)
+{
+    if (m_constraintSource)
+        m_constraintSource->setText(QString::fromUtf8("约束来源：%1").arg(c.source));
+
+    if (!m_constraintHost)
+        return;
+    clearLayout(m_constraintHost);
+
+    auto range = [](const RangeD &r, const QString &unit) {
+        return QString::fromUtf8("[%1, %2]%3").arg(r.lo).arg(r.hi)
+               .arg(unit.isEmpty() ? QString() : QLatin1Char(' ') + unit);
+    };
+    QVector<QStringList> rows = {
+        {QString::fromUtf8("入口俯仰角"), range(c.inletPitchDeg, QStringLiteral("°"))},
+        {QString::fromUtf8("入口延伸系数"), range(c.inletExtend, QString())},
+        {QString::fromUtf8("出口俯仰角"), range(c.outletPitchDeg, QStringLiteral("°"))},
+        {QString::fromUtf8("出口延伸系数"), range(c.outletExtend, QString())},
+        {QString::fromUtf8("rib 相对位置"), range(c.ribSpinePos, QString())},
+        {QString::fromUtf8("rib 缩放"), range(c.ribScale, QString())},
+        {QString::fromUtf8("rib z 下沉"), range(c.ribZShift, QStringLiteral("m"))},
+        {QString::fromUtf8("rib y 控制点"), range(c.ribCpY, QStringLiteral("m"))},
+        {QString::fromUtf8("rib 数"), QString::fromUtf8("= %1（论文规则）").arg(c.ribCount)},
+        {QString::fromUtf8("每 rib z 控制点"),
+         QString::fromUtf8("= %1；%2（容差 %3）")
+             .arg(c.cpPerRib)
+             .arg(c.enforceZSymmetry ? QString::fromUtf8("强制 z 对称") : QString::fromUtf8("不强制对称"))
+             .arg(c.symmetryTol)},
+    };
+    m_constraintHost->addWidget(makeTable(
+        {QString::fromUtf8("约束项"), QString::fromUtf8("取值范围 / 规则")}, rows, TableOptions{}));
 }
 
 void DuctDesignPage::showError(const QString &message)

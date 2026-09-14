@@ -1,0 +1,71 @@
+{
+    "case_id": "5454",
+    "catia_reference": "catia/S-01_5454.CATPart",
+    "fixed": {
+        "axial_length": 1.85,
+        "inlet_area": 0.42,
+        "inlet_rib_locked": true,
+        "outlet_area": 0.58,
+        "outlet_rib_locked": true
+    },
+    "free_variables": {
+        "inlet_dir": {
+            "extend": 0.32,
+            "pitch_deg": -3
+        },
+        "outlet_dir": {
+            "extend": 0.36,
+            "pitch_deg": 5
+        },
+        "ribs": [
+            {
+                "control_point_y": 0.16,
+                "control_points_z": [
+                    0.09,
+                    0.05,
+                    0,
+                    -0.05,
+                    -0.09
+                ],
+                "id": "rib1",
+                "scale": 0.98,
+                "spine_pos": 0.25,
+                "z_shift": -0.04
+            },
+            {
+                "control_point_y": 0.2,
+                "control_points_z": [
+                    0.12,
+                    0.07,
+                    0,
+                    -0.07,
+                    -0.12
+                ],
+                "id": "rib2",
+                "scale": 0.94,
+                "spine_pos": 0.5,
+                "z_shift": -0.1
+            },
+            {
+                "control_point_y": 0.16,
+                "control_points_z": [
+                    0.1,
+                    0.05,
+                    0,
+                    -0.05,
+                    -0.1
+                ],
+                "id": "rib3",
+                "scale": 1.03,
+                "spine_pos": 0.75,
+                "z_shift": -0.03
+            }
+        ]
+    },
+    "param_version": "v1",
+    "shape_family": "S-01",
+    "units": {
+        "angle": "deg",
+        "length": "m"
+    }
+}

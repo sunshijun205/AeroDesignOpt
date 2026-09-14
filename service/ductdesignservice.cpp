@@ -1,6 +1,8 @@
 #include "ductdesignservice.h"
 
+#include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -133,13 +135,13 @@ bool DuctDesignService::exportSnapshot(const DuctParams &params, const QString &
     return true;
 }
 
-QStringList DuctDesignService::validate(const DuctParams &params) const
+QStringList DuctDesignService::validate(const DuctParams &params, const ParamConstraints &c) const
 {
     QStringList issues;
-    auto checkRange = [&](const QString &name, double v, double lo, double hi, const QString &unit) {
-        if (v < lo || v > hi)
+    auto checkRange = [&](const QString &name, double v, const RangeD &r, const QString &unit) {
+        if (v < r.lo || v > r.hi)
             issues << QString::fromUtf8("%1 = %2%3 超出建议范围 [%4, %5]")
-                          .arg(name).arg(v).arg(unit).arg(lo).arg(hi);
+                          .arg(name).arg(v).arg(unit).arg(r.lo).arg(r.hi);
     };
 
     if (params.axialLength <= 0.0)
@@ -149,32 +151,113 @@ QStringList DuctDesignService::validate(const DuctParams &params) const
     if (params.outletArea <= 0.0)
         issues << QString::fromUtf8("出口面积必须为正。");
 
-    checkRange(QString::fromUtf8("入口俯仰角"), params.inletPitchDeg, -15.0, 15.0, QStringLiteral("°"));
-    checkRange(QString::fromUtf8("入口延伸系数"), params.inletExtend, 0.0, 1.0, QString());
-    checkRange(QString::fromUtf8("出口俯仰角"), params.outletPitchDeg, -15.0, 15.0, QStringLiteral("°"));
-    checkRange(QString::fromUtf8("出口延伸系数"), params.outletExtend, 0.0, 1.0, QString());
+    checkRange(QString::fromUtf8("入口俯仰角"), params.inletPitchDeg, c.inletPitchDeg, QStringLiteral("°"));
+    checkRange(QString::fromUtf8("入口延伸系数"), params.inletExtend, c.inletExtend, QString());
+    checkRange(QString::fromUtf8("出口俯仰角"), params.outletPitchDeg, c.outletPitchDeg, QStringLiteral("°"));
+    checkRange(QString::fromUtf8("出口延伸系数"), params.outletExtend, c.outletExtend, QString());
 
-    if (params.ribs.size() != 3)
-        issues << QString::fromUtf8("中间 rib 数应为 3，当前 %1。").arg(params.ribs.size());
+    if (params.ribs.size() != c.ribCount)
+        issues << QString::fromUtf8("中间 rib 数应为 %1，当前 %2。").arg(c.ribCount).arg(params.ribs.size());
 
     for (const DuctRib &rib : params.ribs) {
         const QString tag = rib.id.isEmpty() ? QString::fromUtf8("rib") : rib.id;
-        checkRange(tag + QString::fromUtf8(" 相对位置"), rib.spinePos, 0.0, 1.0, QString());
-        checkRange(tag + QString::fromUtf8(" 缩放"), rib.scale, 0.5, 1.5, QString());
-        checkRange(tag + QString::fromUtf8(" 下沉"), rib.zShift, -0.5, 0.2, QStringLiteral("m"));
-        checkRange(tag + QString::fromUtf8(" y 控制点"), rib.controlPointY, 0.0, 0.5, QStringLiteral("m"));
-        if (rib.controlPointsZ.size() != 5) {
-            issues << QString::fromUtf8("%1 的 z 控制点应为 5 个，当前 %2。")
-                          .arg(tag).arg(rib.controlPointsZ.size());
+        checkRange(tag + QString::fromUtf8(" 相对位置"), rib.spinePos, c.ribSpinePos, QString());
+        checkRange(tag + QString::fromUtf8(" 缩放"), rib.scale, c.ribScale, QString());
+        checkRange(tag + QString::fromUtf8(" 下沉"), rib.zShift, c.ribZShift, QStringLiteral("m"));
+        checkRange(tag + QString::fromUtf8(" y 控制点"), rib.controlPointY, c.ribCpY, QStringLiteral("m"));
+        if (rib.controlPointsZ.size() != c.cpPerRib) {
+            issues << QString::fromUtf8("%1 的 z 控制点应为 %2 个，当前 %3。")
+                          .arg(tag).arg(c.cpPerRib).arg(rib.controlPointsZ.size());
             continue;
         }
-        const double tol = 1e-3;
-        const bool symmetric =
-            qAbs(rib.controlPointsZ.at(0) + rib.controlPointsZ.at(4)) < tol &&
-            qAbs(rib.controlPointsZ.at(1) + rib.controlPointsZ.at(3)) < tol &&
-            qAbs(rib.controlPointsZ.at(2)) < tol;
-        if (!symmetric)
-            issues << QString::fromUtf8("%1 的 z 控制点未满足 z 轴对称（要求首尾相反、中点为 0）。").arg(tag);
+        if (c.enforceZSymmetry && rib.controlPointsZ.size() == 5) {
+            const double tol = c.symmetryTol;
+            const bool symmetric =
+                qAbs(rib.controlPointsZ.at(0) + rib.controlPointsZ.at(4)) < tol &&
+                qAbs(rib.controlPointsZ.at(1) + rib.controlPointsZ.at(3)) < tol &&
+                qAbs(rib.controlPointsZ.at(2)) < tol;
+            if (!symmetric)
+                issues << QString::fromUtf8("%1 的 z 控制点未满足 z 轴对称（要求首尾相反、中点为 0）。").arg(tag);
+        }
     }
     return issues;
+}
+
+ParamConstraints DuctDesignService::defaultConstraints() const
+{
+    ParamConstraints c;
+    c.source = QString::fromUtf8("内置默认值（结构约束取自论文 DuctGen 参数化；数值范围为经验值，客户取值规则待确认）");
+    return c;
+}
+
+bool DuctDesignService::loadConstraints(const QString &path, ParamConstraints &out, QString &error) const
+{
+    out = defaultConstraints();
+
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        error = QString::fromUtf8("无法读取约束配置：%1").arg(path);
+        return false;
+    }
+    const QByteArray raw = file.readAll();
+    file.close();
+
+    QJsonParseError perr{};
+    const QJsonDocument doc = QJsonDocument::fromJson(raw, &perr);
+    if (perr.error != QJsonParseError::NoError || !doc.isObject()) {
+        error = QString::fromUtf8("param_ranges.json 解析失败：%1").arg(perr.errorString());
+        return false;
+    }
+    const QJsonObject obj = doc.object();
+
+    const QJsonObject st = obj.value(QStringLiteral("structural")).toObject();
+    if (st.contains(QStringLiteral("rib_count")))
+        out.ribCount = st.value(QStringLiteral("rib_count")).toInt(out.ribCount);
+    if (st.contains(QStringLiteral("control_points_per_rib")))
+        out.cpPerRib = st.value(QStringLiteral("control_points_per_rib")).toInt(out.cpPerRib);
+    if (st.contains(QStringLiteral("enforce_z_symmetry")))
+        out.enforceZSymmetry = st.value(QStringLiteral("enforce_z_symmetry")).toBool(out.enforceZSymmetry);
+    if (st.contains(QStringLiteral("symmetry_tolerance")))
+        out.symmetryTol = st.value(QStringLiteral("symmetry_tolerance")).toDouble(out.symmetryTol);
+
+    const QJsonObject rg = obj.value(QStringLiteral("ranges")).toObject();
+    auto readRange = [&](const QString &key, RangeD &r) {
+        if (!rg.contains(key))
+            return;
+        const QJsonArray a = rg.value(key).toArray();
+        if (a.size() >= 2) {
+            r.lo = a.at(0).toDouble();
+            r.hi = a.at(1).toDouble();
+        }
+    };
+    readRange(QStringLiteral("inlet_pitch_deg"), out.inletPitchDeg);
+    readRange(QStringLiteral("inlet_extend"), out.inletExtend);
+    readRange(QStringLiteral("outlet_pitch_deg"), out.outletPitchDeg);
+    readRange(QStringLiteral("outlet_extend"), out.outletExtend);
+    readRange(QStringLiteral("rib_spine_pos"), out.ribSpinePos);
+    readRange(QStringLiteral("rib_scale"), out.ribScale);
+    readRange(QStringLiteral("rib_z_shift"), out.ribZShift);
+    readRange(QStringLiteral("rib_control_point_y"), out.ribCpY);
+    return true;
+}
+
+ParamConstraints DuctDesignService::resolveConstraints(const QString &designPath) const
+{
+    if (!designPath.isEmpty()) {
+        QDir d(QFileInfo(designPath).absolutePath());
+        for (int up = 0; up < 3; ++up) {
+            const QString p = d.filePath(QStringLiteral("param_ranges.json"));
+            if (QFile::exists(p)) {
+                ParamConstraints c;
+                QString err;
+                if (loadConstraints(p, c, err)) {
+                    c.source = QString::fromUtf8("数据集配置文件：%1").arg(QDir::cleanPath(p));
+                    return c;
+                }
+            }
+            if (!d.cdUp())
+                break;
+        }
+    }
+    return defaultConstraints();
 }

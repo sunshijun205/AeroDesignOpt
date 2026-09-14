@@ -33,6 +33,7 @@ set(PROJECT_SOURCES
         ui/resultspage.cpp
         model/ductdataset.h
         model/ductparams.h
+        model/paramconstraints.h
         service/datasetservice.h
         service/datasetservice.cpp
         service/ductdesignservice.h

@@ -1,0 +1,19 @@
+{
+  "note": "设计参数取值范围与结构约束。结构约束（rib 数、每 rib 控制点数、z 轴对称）取自论文 DuctGen 参数化；数值范围为经验默认值，客户实际取值规则待确认后在此替换。",
+  "structural": {
+    "rib_count": 3,
+    "control_points_per_rib": 5,
+    "enforce_z_symmetry": true,
+    "symmetry_tolerance": 0.001
+  },
+  "ranges": {
+    "inlet_pitch_deg": [-15, 15],
+    "inlet_extend": [0, 1],
+    "outlet_pitch_deg": [-15, 15],
+    "outlet_extend": [0, 1],
+    "rib_spine_pos": [0, 1],
+    "rib_scale": [0.5, 1.5],
+    "rib_z_shift": [-0.5, 0.2],
+    "rib_control_point_y": [0, 0.5]
+  }
+}

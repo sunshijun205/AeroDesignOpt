@@ -2,6 +2,7 @@
 #define DUCTDESIGNPAGE_H
 
 #include "ductparams.h"
+#include "paramconstraints.h"
 
 #include <QWidget>
 #include <QVector>
@@ -10,6 +11,7 @@
 class QStackedWidget;
 class QLineEdit;
 class QLabel;
+class QVBoxLayout;
 class DuctDesignService;
 class DuctDesignPresenter;
 
@@ -37,6 +39,7 @@ signals:
 public slots:
     void setParams(const DuctParams &params);
     void setValidation(const QStringList &issues);
+    void setConstraints(const ParamConstraints &constraints);
     void showError(const QString &message);
     void setParamStatus(const QString &message, bool warn);
     void showExportOk(const QString &path);
@@ -71,6 +74,8 @@ private:
     QVector<RibEdits> m_ribEdits;
     QLabel *m_source = nullptr;
     QLabel *m_paramStatus = nullptr;
+    QLabel *m_constraintSource = nullptr;
+    QVBoxLayout *m_constraintHost = nullptr;
 
     DuctParams m_params;
     std::unique_ptr<DuctDesignService> m_service;
