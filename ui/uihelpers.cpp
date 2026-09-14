@@ -209,6 +209,21 @@ QScrollArea *wrapScroll(QWidget *content, QWidget *parent)
     return scroll;
 }
 
+QFrame *makeCanvas(const QString &caption, int minHeight, QWidget *parent)
+{
+    auto *canvas = new QFrame(parent);
+    canvas->setObjectName(QStringLiteral("PreviewCanvas"));
+    canvas->setMinimumHeight(minHeight);
+    auto *lay = new QVBoxLayout(canvas);
+    lay->setContentsMargins(12, 12, 12, 12);
+    auto *hint = new QLabel(caption);
+    hint->setObjectName(QStringLiteral("NoteLabel"));
+    hint->setAlignment(Qt::AlignCenter);
+    hint->setWordWrap(true);
+    lay->addWidget(hint);
+    return canvas;
+}
+
 QWidget *makeStatusText(const QString &text, bool warn, QWidget *parent)
 {
     auto *lbl = new QLabel(text, parent);

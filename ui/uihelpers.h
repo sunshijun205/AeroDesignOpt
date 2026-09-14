@@ -41,6 +41,7 @@ QWidget *makeFieldGrid(const QList<QWidget *> &fields, int columns = 2, QWidget 
 QTableWidget *makeTable(const QStringList &headers, const QVector<QStringList> &rows,
                         const TableOptions &options = {}, QWidget *parent = nullptr);
 QScrollArea *wrapScroll(QWidget *content, QWidget *parent = nullptr);
+QFrame *makeCanvas(const QString &caption, int minHeight = 220, QWidget *parent = nullptr);
 QWidget *makeStatusText(const QString &text, bool warn = false, QWidget *parent = nullptr);
 QLabel *makeChip(const QString &text, bool neutral = false, QWidget *parent = nullptr);
 void wireDummyAction(QAbstractButton *button, QWidget *dialogParent);

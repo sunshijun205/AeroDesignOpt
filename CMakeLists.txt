@@ -19,21 +19,18 @@ set(PROJECT_SOURCES
         ui/theme.h
         ui/uihelpers.h
         ui/uihelpers.cpp
-        ui/airfoilpage.h
-        ui/airfoilpage.cpp
-        ui/analysispage.h
-        ui/analysispage.cpp
+        ui/datapage.h
+        ui/datapage.cpp
+        ui/ductdesignpage.h
+        ui/ductdesignpage.cpp
+        ui/visibilitypage.h
+        ui/visibilitypage.cpp
+        ui/surrogatepage.h
+        ui/surrogatepage.cpp
         ui/optimizationpage.h
         ui/optimizationpage.cpp
         ui/resultspage.h
         ui/resultspage.cpp
-        model/airfoiltypes.h
-        model/airfoilstore.h
-        model/airfoilstore.cpp
-        service/aeroanalysisservice.h
-        service/aeroanalysisservice.cpp
-        controller/analysispresenter.h
-        controller/analysispresenter.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

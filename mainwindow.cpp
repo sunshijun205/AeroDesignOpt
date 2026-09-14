@@ -2,8 +2,10 @@
 
 #include "theme.h"
 #include "uihelpers.h"
-#include "airfoilpage.h"
-#include "analysispage.h"
+#include "datapage.h"
+#include "ductdesignpage.h"
+#include "visibilitypage.h"
+#include "surrogatepage.h"
 #include "optimizationpage.h"
 #include "resultspage.h"
 
@@ -19,9 +21,9 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    setWindowTitle(QString::fromUtf8("气动设计优化平台"));
-    resize(1360, 860);
-    setMinimumSize(1080, 700);
+    setWindowTitle(QString::fromUtf8("进气道外形优化设计工具"));
+    resize(1440, 880);
+    setMinimumSize(1120, 720);
     menuBar()->hide();
     statusBar()->hide();
 
@@ -37,18 +39,18 @@ MainWindow::MainWindow(QWidget *parent)
     auto *tl = new QHBoxLayout(top);
     tl->setContentsMargins(22, 0, 22, 0);
     tl->setSpacing(18);
-    auto *brand = new QLabel(QString::fromUtf8("气动设计优化平台"));
+    auto *brand = new QLabel(QString::fromUtf8("进气道外形优化设计工具"));
     brand->setObjectName(QStringLiteral("BrandLabel"));
     auto *divider = new QFrame;
     divider->setFrameShape(QFrame::VLine);
     divider->setStyleSheet(QStringLiteral("color: #d6dde8;"));
     divider->setFixedHeight(18);
-    auto *project = new QLabel(QString::fromUtf8("项目：Wing-01 　/　基准翼型 NACA2412"));
+    auto *project = new QLabel(QString::fromUtf8("项目：Duct-01 　/　基准 S-01 进气道"));
     project->setObjectName(QStringLiteral("ProjectLabel"));
-    m_secondary = makeButton(QString::fromUtf8("保存分析"));
-    m_primary = makeButton(QString::fromUtf8("运行气动分析"), true);
-    connect(m_secondary, &QPushButton::clicked, this, &MainWindow::onSecondaryClicked);
-    connect(m_primary, &QPushButton::clicked, this, &MainWindow::onPrimaryClicked);
+    m_secondary = makeButton(QString::fromUtf8("刷新"));
+    m_primary = makeButton(QString::fromUtf8("导入数据"), true);
+    connect(m_secondary, &QPushButton::clicked, this, [this]() { onActionClicked(m_secondary); });
+    connect(m_primary, &QPushButton::clicked, this, [this]() { onActionClicked(m_primary); });
     tl->addWidget(brand);
     tl->addWidget(divider);
     tl->addWidget(project);
@@ -62,10 +64,12 @@ MainWindow::MainWindow(QWidget *parent)
     fl->setContentsMargins(22, 8, 22, 8);
     fl->setSpacing(8);
     const QStringList modes = {
-        QString::fromUtf8("翼型设计"),
-        QString::fromUtf8("气动分析"),
+        QString::fromUtf8("数据管理"),
+        QString::fromUtf8("参数化设计"),
+        QString::fromUtf8("全遮挡评价"),
+        QString::fromUtf8("气动代理"),
         QString::fromUtf8("优化"),
-        QString::fromUtf8("结果")
+        QString::fromUtf8("结果对比")
     };
     auto *group = new QButtonGroup(this);
     group->setExclusive(true);
@@ -82,9 +86,10 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     m_pages = new QStackedWidget;
-    m_analysisPage = new AnalysisPage;
-    m_pages->addWidget(new AirfoilPage);
-    m_pages->addWidget(m_analysisPage);
+    m_pages->addWidget(new DataPage);
+    m_pages->addWidget(new DuctDesignPage);
+    m_pages->addWidget(new VisibilityPage);
+    m_pages->addWidget(new SurrogatePage);
     m_pages->addWidget(new OptimizationPage);
     m_pages->addWidget(new ResultsPage);
 
@@ -108,31 +113,19 @@ void MainWindow::switchMode(int index)
 void MainWindow::updateActions(int index)
 {
     static const char *primary[] = {
-        "生成翼型", "运行气动分析", "开始优化", "导出结果"
+        "导入数据", "生成外形", "运行遮挡判定", "运行预测", "开始优化", "导出结果"
     };
     static const char *secondary[] = {
-        "重置参数", "保存分析", "保存配置", "刷新"
+        "刷新", "重置参数", "保存设置", "批量预测", "保存配置", "刷新"
     };
     m_primary->setText(QString::fromUtf8(primary[index]));
     m_secondary->setText(QString::fromUtf8(secondary[index]));
 }
 
-void MainWindow::onPrimaryClicked()
+void MainWindow::onActionClicked(QPushButton *button)
 {
-    if (m_pages->currentIndex() == 1 && m_analysisPage) {
-        m_analysisPage->requestRun();
+    if (!button)
         return;
-    }
-    QMessageBox::information(this, QString::fromUtf8("气动设计优化平台"),
-                             m_primary->text() + QString::fromUtf8(" — 原型交互已记录。"));
-}
-
-void MainWindow::onSecondaryClicked()
-{
-    if (m_pages->currentIndex() == 1 && m_analysisPage) {
-        m_analysisPage->requestSave();
-        return;
-    }
-    QMessageBox::information(this, QString::fromUtf8("气动设计优化平台"),
-                             m_secondary->text() + QString::fromUtf8(" — 原型交互已记录。"));
+    QMessageBox::information(this, QString::fromUtf8("进气道外形优化设计工具"),
+                             button->text() + QString::fromUtf8(" — 原型交互已记录（纯界面，无业务数据流）。"));
 }
