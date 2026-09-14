@@ -1,0 +1,21 @@
+{
+  "case_id": "5969",
+  "operating_point": "cruise",
+  "freestream": {
+    "mach": 0.80,
+    "altitude_m": 11000,
+    "aoa_deg": 0.0,
+    "sideslip_deg": 0.0,
+    "atmosphere": "ISA_standard"
+  },
+  "inlet_bc": {
+    "type": "riemann",
+    "total_pressure_pa": 34500,
+    "total_temperature_k": 245.6,
+    "turbulence_model_inputs": { "k": 1.2, "omega": 350.0 }
+  },
+  "outlet_bc": {
+    "type": "mass_flow",
+    "mass_flow_kgs": 42.0
+  }
+}

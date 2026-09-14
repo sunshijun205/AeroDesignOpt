@@ -1,0 +1,109 @@
+{
+    "cases": [
+        {
+            "batch": "batch-A",
+            "case_id": "5454",
+            "files": {
+                "condition": "cases/case_5454/condition.json",
+                "design": "cases/case_5454/design.json",
+                "result": "cases/case_5454/result.json",
+                "solver_meta": "cases/case_5454/solver_meta.json"
+            },
+            "has_field": true,
+            "inputs": {
+                "aoa_deg": 0,
+                "inlet_pitch_deg": -3,
+                "mach": 0.8,
+                "mass_flow_kgs": 42,
+                "outlet_pitch_deg": 5,
+                "rib2_z_shift": -0.1
+            },
+            "reason": "",
+            "role": "validation",
+            "targets": {
+                "DC60": 0.0745,
+                "SC60": 0.098,
+                "omega": 0.1145,
+                "pi": 0.9749,
+                "sigma": 0.9749,
+                "visibility": 0.5669
+            },
+            "usable": true
+        },
+        {
+            "batch": "batch-A",
+            "case_id": "5763",
+            "files": {
+                "condition": "cases/case_5763/condition.json",
+                "design": "cases/case_5763/design.json",
+                "result": "cases/case_5763/result.json",
+                "solver_meta": "cases/case_5763/solver_meta.json"
+            },
+            "has_field": true,
+            "inputs": {
+                "aoa_deg": 0,
+                "inlet_pitch_deg": -4,
+                "mach": 0.8,
+                "mass_flow_kgs": 42,
+                "outlet_pitch_deg": 6.5,
+                "rib2_z_shift": -0.14
+            },
+            "reason": "",
+            "role": "train",
+            "targets": {
+                "DC60": 0.1412,
+                "SC60": 0.1728,
+                "omega": 0.1337,
+                "pi": 0.9709,
+                "sigma": 0.9709,
+                "visibility": 0.3144
+            },
+            "usable": true
+        },
+        {
+            "batch": "batch-A",
+            "case_id": "5969",
+            "files": {
+                "condition": "cases/case_5969/condition.json",
+                "design": "cases/case_5969/design.json",
+                "result": "cases/case_5969/result.json",
+                "solver_meta": "cases/case_5969/solver_meta.json"
+            },
+            "has_field": false,
+            "inputs": {
+                "aoa_deg": 0,
+                "inlet_pitch_deg": -6,
+                "mach": 0.8,
+                "mass_flow_kgs": 42,
+                "outlet_pitch_deg": 9,
+                "rib2_z_shift": -0.22
+            },
+            "reason": "",
+            "role": "train",
+            "targets": {
+                "DC60": 0.4848,
+                "SC60": 0.315,
+                "omega": 0.171,
+                "pi": 0.9623,
+                "sigma": 0.9623,
+                "visibility": 0.1632
+            },
+            "usable": true
+        }
+    ],
+    "counts": {
+        "excluded": 0,
+        "total": 3,
+        "train": 2,
+        "usable": 3,
+        "validation": 1
+    },
+    "dataset_name": "Duct-01",
+    "generated": "2026-09-14T16:01:49",
+    "global_conventions": {
+        "outlet_averaging_method": "mass_weighted",
+        "reference_total_pressure_location": "inlet_plane"
+    },
+    "root_dir": "C:/N-21HEPF5761N1-Data/shisun/Desktop/aricontrol/AeroDesignOpt/sample_dataset",
+    "split_rule": "可用性：solver_meta 存在、已收敛、参考总压位置与出口平均方式符合全局约定；划分：可用算例按导入顺序每 5 个取 1 个为验证集（单个可用算例则全部作训练集）。"
+}

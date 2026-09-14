@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_secondary = makeButton(QString::fromUtf8("刷新"));
     m_primary = makeButton(QString::fromUtf8("导入数据"), true);
     connect(m_secondary, &QPushButton::clicked, this, [this]() { onActionClicked(m_secondary); });
-    connect(m_primary, &QPushButton::clicked, this, [this]() { onActionClicked(m_primary); });
+    connect(m_primary, &QPushButton::clicked, this, &MainWindow::onPrimaryClicked);
     tl->addWidget(brand);
     tl->addWidget(divider);
     tl->addWidget(project);
@@ -86,7 +86,8 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     m_pages = new QStackedWidget;
-    m_pages->addWidget(new DataPage);
+    m_dataPage = new DataPage;
+    m_pages->addWidget(m_dataPage);
     m_pages->addWidget(new DuctDesignPage);
     m_pages->addWidget(new VisibilityPage);
     m_pages->addWidget(new SurrogatePage);
@@ -120,6 +121,15 @@ void MainWindow::updateActions(int index)
     };
     m_primary->setText(QString::fromUtf8(primary[index]));
     m_secondary->setText(QString::fromUtf8(secondary[index]));
+}
+
+void MainWindow::onPrimaryClicked()
+{
+    if (m_pages->currentIndex() == 0 && m_dataPage) {
+        m_dataPage->requestImport();
+        return;
+    }
+    onActionClicked(m_primary);
 }
 
 void MainWindow::onActionClicked(QPushButton *button)

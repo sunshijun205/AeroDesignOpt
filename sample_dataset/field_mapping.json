@@ -1,0 +1,22 @@
+{
+  "template_name": "default_v1",
+  "case_id_from": "CaseName",
+  "geometry": {
+    "inlet_area": "A_in",
+    "outlet_area": "A_AIP"
+  },
+  "condition": {
+    "mach": "Ma_inf",
+    "aoa_deg": "AoA",
+    "mass_flow_kgs": "mdot"
+  },
+  "result": {
+    "sigma_total_pressure_recovery": "PR_recovery",
+    "omega_total_pressure_loss": "omega",
+    "pi_total_pressure_ratio": "PR",
+    "DC60": "DC_60",
+    "SC60": "SC_60",
+    "V_ratio": "visibility"
+  },
+  "missing_policy": "flag_and_skip"
+}

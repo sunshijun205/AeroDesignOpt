@@ -31,6 +31,16 @@ set(PROJECT_SOURCES
         ui/optimizationpage.cpp
         ui/resultspage.h
         ui/resultspage.cpp
+        model/ductdataset.h
+        model/ductparams.h
+        service/datasetservice.h
+        service/datasetservice.cpp
+        service/ductdesignservice.h
+        service/ductdesignservice.cpp
+        controller/datapresenter.h
+        controller/datapresenter.cpp
+        controller/ductdesignpresenter.h
+        controller/ductdesignpresenter.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

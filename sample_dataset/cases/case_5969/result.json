@@ -1,0 +1,24 @@
+{
+  "case_id": "5969",
+  "evaluation_plane": "AIP",
+  "reference_total_pressure": "inlet_plane",
+  "averaging": "mass_weighted",
+  "aero": {
+    "sigma_total_pressure_recovery": 0.9623,
+    "omega_total_pressure_loss": 0.1710,
+    "pi_total_pressure_ratio": 0.9623,
+    "DC60": 0.4848,
+    "SC60": 0.3150,
+    "pt2_mean_pa": 33179,
+    "u_abs_aip_ms": 118.8
+  },
+  "visibility": {
+    "V_ratio": 0.1632,
+    "front_view_hidden": true,
+    "visible_gamma_min_deg": -16.6,
+    "visible_gamma_max_deg": -6.3,
+    "delta_gamma_deg": 10.3,
+    "resolution_mm": 1.0,
+    "tolerance_mm": 0.5
+  }
+}

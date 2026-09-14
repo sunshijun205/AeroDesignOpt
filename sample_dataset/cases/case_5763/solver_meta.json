@@ -1,0 +1,14 @@
+{
+  "case_id": "5763",
+  "batch": "batch-A",
+  "solver": "TRACE",
+  "solver_version": "9.0",
+  "turbulence_model": "k-omega-wilcox",
+  "equations": "RANS_finite_volume",
+  "wall_treatment": { "y_plus_target": 1.0 },
+  "reference_total_pressure_location": "inlet_plane",
+  "outlet_averaging_method": "mass_weighted",
+  "outlet_bc_type": "mass_flow",
+  "mesh": { "topology": "butterfly_H", "cells": 3200000 },
+  "convergence": { "converged": true, "residual_drop_orders": 5 }
+}

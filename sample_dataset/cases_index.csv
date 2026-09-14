@@ -1,0 +1,4 @@
+case_id,batch,shape_family,mach,aoa_deg,mass_flow_kgs,sigma,omega,pi,DC60,SC60,visibility,has_field,status
+5454,batch-A,S-01,0.80,0.0,42.0,0.9749,0.1145,0.9749,0.0745,0.0980,0.5669,true,ok
+5763,batch-A,S-01,0.80,0.0,42.0,0.9709,0.1337,0.9709,0.1412,0.1728,0.3144,true,ok
+5969,batch-A,S-01,0.80,0.0,42.0,0.9623,0.1710,0.9623,0.4848,0.3150,0.1632,false,constraint_violation

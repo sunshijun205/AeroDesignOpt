@@ -1,0 +1,120 @@
+{
+    "consistency": {
+        "checked_cases": 3,
+        "deviations": [
+        ],
+        "missing_meta": 0,
+        "rows": [
+            {
+                "conclusion": "一致",
+                "consistent": true,
+                "expected": "inlet_plane",
+                "found": "inlet_plane×3",
+                "item": "参考总压位置"
+            },
+            {
+                "conclusion": "一致",
+                "consistent": true,
+                "expected": "mass_weighted",
+                "found": "mass_weighted×3",
+                "item": "出口平均方式"
+            },
+            {
+                "conclusion": "一致",
+                "consistent": true,
+                "expected": "k-omega-wilcox",
+                "found": "k-omega-wilcox×3",
+                "item": "湍流模型"
+            },
+            {
+                "conclusion": "一致",
+                "consistent": true,
+                "expected": "mass_flow",
+                "found": "mass_flow×3",
+                "item": "出口边界"
+            },
+            {
+                "conclusion": "一致",
+                "consistent": true,
+                "expected": "TRACE 9.0",
+                "found": "TRACE 9.0×3",
+                "item": "求解器/版本"
+            },
+            {
+                "conclusion": "一致",
+                "consistent": true,
+                "expected": "已收敛",
+                "found": "已收敛×3",
+                "item": "收敛状态"
+            }
+        ]
+    },
+    "coverage": {
+        "cases": 3,
+        "condition_points": 1,
+        "dims": [
+            {
+                "distinct": 1,
+                "kind": "工况",
+                "max": 0.8,
+                "min": 0.8,
+                "name": "来流马赫数",
+                "unit": ""
+            },
+            {
+                "distinct": 1,
+                "kind": "工况",
+                "max": 0,
+                "min": 0,
+                "name": "攻角",
+                "unit": "deg"
+            },
+            {
+                "distinct": 1,
+                "kind": "工况",
+                "max": 42,
+                "min": 42,
+                "name": "质量流量",
+                "unit": "kg/s"
+            },
+            {
+                "distinct": 3,
+                "kind": "设计",
+                "max": -3,
+                "min": -6,
+                "name": "入口俯仰角",
+                "unit": "deg"
+            },
+            {
+                "distinct": 3,
+                "kind": "设计",
+                "max": 9,
+                "min": 5,
+                "name": "出口俯仰角",
+                "unit": "deg"
+            },
+            {
+                "distinct": 3,
+                "kind": "设计",
+                "max": -0.1,
+                "min": -0.22,
+                "name": "Rib-2 下沉",
+                "unit": "m"
+            }
+        ],
+        "geometries": 3,
+        "joint_covered": 3,
+        "joint_ratio": 1,
+        "joint_target": 3,
+        "notes": [
+            "所有算例集中在单一工况点，无法评估跨工况泛化，建议在其他工况补算。"
+        ],
+        "suggestions": [
+            "DC60 跨度大（7.4%%~48.5%%），响应可能强非线性，建议在高畸变区加密。",
+            "算例 5969 处于约束边界（DC60=48.5%%、SC60=31.5%%），该区域样本不足，建议就近加密。"
+        ]
+    },
+    "dataset_name": "Duct-01",
+    "generated": "2026-09-14T16:01:49",
+    "root_dir": "C:/N-21HEPF5761N1-Data/shisun/Desktop/aricontrol/AeroDesignOpt/sample_dataset"
+}

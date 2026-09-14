@@ -1,0 +1,14 @@
+{
+  "dataset_name": "Duct-01",
+  "created": "2026-09-14",
+  "shape_families": ["S-01"],
+  "param_dimension": 27,
+  "global_conventions": {
+    "reference_total_pressure_location": "inlet_plane",
+    "outlet_averaging_method": "mass_weighted",
+    "units": { "length": "m", "pressure": "Pa", "angle": "deg" }
+  },
+  "batches": [
+    { "id": "batch-A", "cases": 3, "has_field": true, "status": "verified" }
+  ]
+}
